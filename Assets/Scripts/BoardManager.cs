@@ -38,6 +38,7 @@ public class BoardManager : MonoBehaviour {
     {
         if(boardManager)
         {
+            DontDestroyOnLoad(boardManager);
             return boardManager;
         } else
         {
