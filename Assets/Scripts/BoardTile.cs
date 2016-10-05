@@ -10,6 +10,7 @@ public class BoardTile : MonoBehaviour {
     public int y;
     public BoardTile[] adjTiles;
     public BoardManager parent;
+    public Entity content;
 
     //Events
     public UnityEvent enterTile;
