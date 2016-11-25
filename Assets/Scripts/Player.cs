@@ -6,7 +6,7 @@ public class Player : MonoBehaviour {
     public int deckCount; //Max deck size.
     public int maxHandSize; //Max hand size.
     public int energy; //Energy, the player's resources.
-    //private Hand hand;
+    //private Card[] hand;
     //private Deck deck;
     //TODO: Add deck and hand variables.
 
