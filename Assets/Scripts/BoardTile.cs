@@ -4,45 +4,69 @@ using UnityEngine.Events;
 using System.Collections;
 
 //Basic data structure to store information about a single tile
-public class BoardTile : MonoBehaviour {
+public class BoardTile : MonoBehaviour{
     public enum Directions : byte { E, SE, SW, W, NW, NE };
-    public int x;
-    public int y;
-    public BoardTile[] adjTiles;
-    public BoardManager parent;
+    private int x;
+    private int y;
+    private GameObject[] adjTiles;
+    private BoardManager parent;
+    private GameObject content;
 
-    //Events
-    public UnityEvent enterTile;
-    public UnityEvent leaveTile;
+    //Called on instantiation
+    public void Start()
+    {
+        adjTiles = new GameObject[6];
+        parent = BoardManager.GetBoardManager();
+    }
 
-    public BoardTile(int x, int y, BoardManager parent)
+    public void SetCoordinates(int x, int y)
     {
         this.x = x;
         this.y = y;
-        this.adjTiles = new BoardTile[6];
-        this.parent = parent;
-        enterTile = new UnityEvent();
-        leaveTile = new UnityEvent();
     }
 
-    //Method to set the array of adjacent tiles given a board
-    public void updateAdjacentTiles()
+    public int getX()
     {
-        adjTiles[0] = parent.getTile(x + 1, y);
+        return x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+    
+
+    //Method to set the array of adjacent tiles given a board
+    public void UpdateAdjacentTiles()
+    {
+        /* Wrap around the western neighbor */
+        adjTiles[0] = parent.GetTile(x + 1 % BoardManager.WIDTH, y);
+
+        /* If the tile is along the bottom row, don't add the southern neighbors */
         if(y - 1 >= 0)
         {
-            adjTiles[1] = parent.getTile(x + 1, y - 1);
-            adjTiles[2] = parent.getTile(x, y - 1);
+            adjTiles[1] = parent.GetTile(x + 1, y - 1);
+            adjTiles[2] = parent.GetTile(x, y - 1);
         } else
         {
             adjTiles[1] = null;
             adjTiles[2] = null;
         }
-        adjTiles[3] = parent.getTile(x - 1, y);
+
+        /* Wrap around the eastern neighbor */
+        if (x != 0)
+        {
+            adjTiles[3] = parent.GetTile(x - 1, y);
+        } else
+        {
+            adjTiles[3] = parent.GetTile(BoardManager.WIDTH - 1, y);
+        }
+
+        /* If the tile is along the top row, don't add the northern neighbors */
         if(y + 1 < BoardManager.HEIGHT)
         {
-            adjTiles[4] = parent.getTile(x - 1, y + 1);
-            adjTiles[5] = parent.getTile(x, y + 1);
+            adjTiles[4] = parent.GetTile(x - 1, y + 1);
+            adjTiles[5] = parent.GetTile(x, y + 1);
         } else
         {
             adjTiles[4] = null;
@@ -59,7 +83,7 @@ public class BoardTile : MonoBehaviour {
         ArrayList result = new ArrayList();
         for(int i = 0; i < size; i++)
         {
-            BoardTile temp = adjTiles[(dir + i) % adjTiles.Length];
+            GameObject temp = adjTiles[(dir + i) % adjTiles.Length];
             if(temp != null) { result.Add(temp); }
         }
         return result;

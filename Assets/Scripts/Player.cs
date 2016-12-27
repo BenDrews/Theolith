@@ -21,18 +21,18 @@ public class Player : MonoBehaviour {
 	}
 
     // method to draw Card
-    void drawCard()
+    void DrawCard()
     {
         //TODO: Interact with deck to get a card.
     }
 
-    void discardCard()//int parameter
+    void DiscardCard()//int parameter
         //TODO: Discard a card from hand by removing a specific card in hand
     {
 
     }
 
-    void revealHand()
+    void RevealHand()
     {
         //TODO: Reveals hand to everyone.
     }
