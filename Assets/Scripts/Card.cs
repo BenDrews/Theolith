@@ -6,7 +6,7 @@ public class Card : MonoBehaviour {
 
     private int cost;
     private Sprite card; //Card's image.
-    private List<Effect> effects;
+    private Effect effect;
     //private Text
     // private Minion minion; -Associated minion.
 	// Use this for initialization
@@ -16,10 +16,7 @@ public class Card : MonoBehaviour {
 
     //Cast the spell
     void Cast()
-    {
-        foreach(Effect e in effects)
-        {
-            EffectStack.GetEffectStack().AddEffect(e);
-        }
+    {   
+        EffectStack.GetEffectStack().AddEffect(effect);   
     }
 }

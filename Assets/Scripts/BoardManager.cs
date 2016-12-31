@@ -19,9 +19,17 @@ public class BoardManager : MonoBehaviour {
     private int anchorX = 0;
 
     /* Base game tile */
-    public GameObject tile;
+    private GameObject tile;
 	
 	void Start () {
+
+       if(boardManager == null)
+        {
+            boardManager = this;
+        }
+
+        //Get the base tile
+        tile = (GameObject)Resources.Load("BaseTile");
 
         //Initialize the tiles in the board
         board = new GameObject[WIDTH, HEIGHT];
@@ -29,11 +37,19 @@ public class BoardManager : MonoBehaviour {
         {
             for(int y = 0; y < HEIGHT; y++)
             {
-                float xPos = (x + (y / 2.0f)) * TILE_SIZE;
-                float yPos = y * TILE_SIZE / Mathf.Sqrt(3.0f);
+                float xCoord = (x + (y / 2.0f));
+
+                //Wrap around tiles that overflow on the east
+                if(xCoord >= WIDTH)
+                {
+                    xCoord -= WIDTH;
+                }
+                float xPos = xCoord * TILE_SIZE;
+                float yPos = y * TILE_SIZE;
 
                 board[x, y] = (GameObject)Instantiate(tile, new Vector3(xPos, yPos), Quaternion.identity, this.transform);
-                board[x, y].GetComponent<BoardTile>().SetCoordinates(x, y);
+                board[x, y].GetComponent<BoardTile>().x = x;
+                board[x, y].GetComponent<BoardTile>().y = y;
             }
         }
 
@@ -65,15 +81,52 @@ public class BoardManager : MonoBehaviour {
     {
         BoardTile tileComponent = tile.GetComponent<BoardTile>();
         anchorX = newAnchorX;
-        float horizOffset = (tileComponent.getX() + (tileComponent.getY() / 2.0f)) - anchorX;
+        float horizOffset = (tileComponent.x + (tileComponent.y / 2.0f)) - anchorX;
 
         if (horizOffset < 0)
         {
             horizOffset += WIDTH;
         }
         float xOffset = horizOffset * TILE_SIZE;
-        float yOffset = tileComponent.getY() * TILE_SIZE / Mathf.Sqrt(3.0f);
+        float yOffset = tileComponent.y * TILE_SIZE;
         tile.transform.position = board[anchorX, 0].transform.position + new Vector3(xOffset, yOffset, 0.0f);
+    }
+
+    public bool AddEntity(GameObject target, int x, int y) 
+    {
+        Entity entity = target.GetComponent<Entity>();
+        Debug.Assert(entity != null);
+        entity.onEnter();
+        BoardTile tileComponent = board[x, y].GetComponent<BoardTile>();
+        if(tileComponent.content == null)
+        {
+            tileComponent.content = target;
+            entity.afterEnter();
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public bool RemoveEntity(int x, int y)
+    {
+        BoardTile tileComponent = board[x, y].GetComponent<BoardTile>();
+        if(tileComponent.content != null)
+        {
+            Destroy(tileComponent.content);
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public bool RemoveEntity(GameObject target)
+    {
+        Debug.Assert(target.GetComponent<Entity>() != null);
+        Entity targetEnt = target.GetComponent<Entity>();
+        return RemoveEntity(targetEnt.GetX(), targetEnt.GetY());
     }
 
     public static BoardManager GetBoardManager()
@@ -83,8 +136,10 @@ public class BoardManager : MonoBehaviour {
             return boardManager;
         } else
         {
-            boardManager = new BoardManager();
+            GameObject boardManagerObj = new GameObject("BoardManager");
+            boardManager = boardManagerObj.AddComponent<BoardManager>().GetComponent<BoardManager>();
             DontDestroyOnLoad(boardManager);
+            Debug.Log(boardManager);
             return boardManager;
         }
     }

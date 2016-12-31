@@ -6,47 +6,31 @@ using System.Collections;
 //Basic data structure to store information about a single tile
 public class BoardTile : MonoBehaviour{
     public enum Directions : byte { E, SE, SW, W, NW, NE };
-    private int x;
-    private int y;
     private GameObject[] adjTiles;
-    private BoardManager parent;
-    private GameObject content;
+
+    public GameObject content;
+    public int x;
+    public int y;
 
     //Called on instantiation
-    public void Start()
+    public void Awake()
     {
         adjTiles = new GameObject[6];
-        parent = BoardManager.GetBoardManager();
     }
-
-    public void SetCoordinates(int x, int y)
-    {
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX()
-    {
-        return x;
-    }
-
-    public int getY()
-    {
-        return y;
-    }
-    
-
+ 
     //Method to set the array of adjacent tiles given a board
     public void UpdateAdjacentTiles()
     {
+        BoardManager boardManager = BoardManager.GetBoardManager();
+
         /* Wrap around the western neighbor */
-        adjTiles[0] = parent.GetTile(x + 1 % BoardManager.WIDTH, y);
+        adjTiles[0] = boardManager.GetTile(Util.Mod(x + 1, BoardManager.WIDTH), y);
 
         /* If the tile is along the bottom row, don't add the southern neighbors */
         if(y - 1 >= 0)
         {
-            adjTiles[1] = parent.GetTile(x + 1, y - 1);
-            adjTiles[2] = parent.GetTile(x, y - 1);
+            adjTiles[1] = boardManager.GetTile(Util.Mod(x + 1, BoardManager.WIDTH), y - 1);
+            adjTiles[2] = boardManager.GetTile(x, y - 1);
         } else
         {
             adjTiles[1] = null;
@@ -54,19 +38,14 @@ public class BoardTile : MonoBehaviour{
         }
 
         /* Wrap around the eastern neighbor */
-        if (x != 0)
-        {
-            adjTiles[3] = parent.GetTile(x - 1, y);
-        } else
-        {
-            adjTiles[3] = parent.GetTile(BoardManager.WIDTH - 1, y);
-        }
+        adjTiles[3] = boardManager.GetTile(Util.Mod(x - 1, BoardManager.WIDTH), y);
+
 
         /* If the tile is along the top row, don't add the northern neighbors */
         if(y + 1 < BoardManager.HEIGHT)
         {
-            adjTiles[4] = parent.GetTile(x - 1, y + 1);
-            adjTiles[5] = parent.GetTile(x, y + 1);
+            adjTiles[4] = boardManager.GetTile(Util.Mod(x - 1, BoardManager.WIDTH), y + 1);
+            adjTiles[5] = boardManager.GetTile(x, y + 1);
         } else
         {
             adjTiles[4] = null;

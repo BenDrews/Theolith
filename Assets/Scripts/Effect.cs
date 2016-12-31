@@ -2,19 +2,15 @@
 using UnityEngine.Events;
 using System.Collections;
 
-public class Effect : MonoBehaviour
+public class Effect
 {
-    public delegate void ResolveDelegate();
-    private ResolveDelegate effectFunction;
-    private int cost;
-    
-    public Effect(ResolveDelegate effectFunction, int cost) {
-        this.effectFunction = effectFunction;
-        this.cost = cost;
+    public int cost = 0;
+
+    public virtual void Resolve()
+    {
     }
 
-    public void Resolve()
-    {
-        effectFunction();
+    public virtual IEnumerator GetEnumerator() {
+        yield return this;
     }
 }

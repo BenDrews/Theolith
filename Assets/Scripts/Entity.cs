@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Entity : MonoBehaviour {
@@ -6,20 +7,31 @@ public class Entity : MonoBehaviour {
     public enum Type : byte { Structure, Minion, Carpet };
 
     public byte type;
+    public string text;
+    public bool canMove = true;
+    public bool canAttack = true;
+    public int attack = 1;
+    public int health = 1;
+    public int maxActions = 2;
+    public int cost = 0;
 
-    private int attack;
-    private int health;
-    private int cost;
+    private int x = 0;
+    private int y = 0;
     private int turnPlayed;
-    private int maxActions;
     private int actionsRemaining;
-    private bool canMove;
-    private bool canAttack;
     private Player controller;
+    //private ArrayList<Buff> buffs;
+
+    private GameObject uiCanvas;
+    private Text attackStatLabel;
+    private Text healthStatLabel;
 
     // Use this for initialization
     void Start () {
-	    
+        uiCanvas = (GameObject)GameObject.Instantiate(Resources.Load("BaseStatLabel"), this.transform);
+        attackStatLabel = uiCanvas.transform.Find("AttackStat").gameObject.GetComponent<Text>();
+        healthStatLabel = uiCanvas.transform.Find("HealthStat").gameObject.GetComponent<Text>();
+        turnPlayed = GameManager.GetGameManager().GetTurnCount();
 	}
 	
 	// Update is called once per frame
@@ -30,6 +42,7 @@ public class Entity : MonoBehaviour {
     void SetAttackStat(int atk)
     {
         attack = atk;
+        attackStatLabel.text = attack.ToString();
     }
 
     int GetAttackStat()
@@ -40,6 +53,7 @@ public class Entity : MonoBehaviour {
     void SetHealthStat(int hp)
     {
         health = hp;
+        healthStatLabel.text = health.ToString();
     }
 
     int GetHealthStat()
@@ -63,12 +77,29 @@ public class Entity : MonoBehaviour {
         return health;
     }
 
-    void EnterBoard()
+    public int GetX()
+    {
+        return x;
+    }
+
+    public int GetY()
+    {
+        return y;
+    }
+
+    public void Move(int x, int y)
     {
 
     }
 
-    void leaveBoard()
+    /* Use this method to add on cast effects as well as listeners for triggered effects */
+    public virtual void onEnter()
+    {
+
+    }
+
+    /* Use this methhod to add persistent effects */
+    public virtual void afterEnter()
     {
 
     }

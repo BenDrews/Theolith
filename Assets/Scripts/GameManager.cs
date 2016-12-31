@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager gameManager; //A static member of GameManager that can be accessed by any other member in the code.
     private BoardManager boardGen;
+    private int turnCount = 0;
     
 
     // Events
@@ -39,11 +40,17 @@ public class GameManager : MonoBehaviour {
 	}
 
     void InitGame() {
+
     }
 
     void Update()
     {
 
+    }
+
+    public int GetTurnCount()
+    {
+        return turnCount;
     }
 	
     public static GameManager GetGameManager()
