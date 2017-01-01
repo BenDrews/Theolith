@@ -26,6 +26,7 @@ public class BoardManager : MonoBehaviour {
        if(boardManager == null)
         {
             boardManager = this;
+            DontDestroyOnLoad(boardManager);
         }
 
         //Get the base tile
@@ -69,6 +70,11 @@ public class BoardManager : MonoBehaviour {
         return board[x, y];
     }
 
+    public void HighlightTile(int x, int y)
+    {
+        board[x, y].GetComponent<SpriteRenderer>().material.SetColor("_Color", Color.grey);
+    }
+
     public void UpdateTileLocations(int newAnchorX)
     {
         foreach(GameObject tile in board)
@@ -96,12 +102,13 @@ public class BoardManager : MonoBehaviour {
     {
         Entity entity = target.GetComponent<Entity>();
         Debug.Assert(entity != null);
-        entity.onEnter();
         BoardTile tileComponent = board[x, y].GetComponent<BoardTile>();
         if(tileComponent.content == null)
         {
             tileComponent.content = target;
-            entity.afterEnter();
+            entity.SetX(x);
+            entity.SetY(y);
+            entity.transform.SetParent(tileComponent.transform);           
             return true;
         } else
         {
@@ -139,7 +146,6 @@ public class BoardManager : MonoBehaviour {
             GameObject boardManagerObj = new GameObject("BoardManager");
             boardManager = boardManagerObj.AddComponent<BoardManager>().GetComponent<BoardManager>();
             DontDestroyOnLoad(boardManager);
-            Debug.Log(boardManager);
             return boardManager;
         }
     }

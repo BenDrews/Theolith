@@ -2,38 +2,50 @@
 using UnityEngine.Events;
 using System.Collections.Generic;
 
+/* Class that holds the effects scheduled to be resolved */
 public class EffectStack : MonoBehaviour
 {
-    private List<Effect> stack;
+    private List<GameObject> stack;
 
-    public static EffectStack effectStack; //A static member of EffectStack that can be accessed by any other member in the code.
+    private static EffectStack effectStack; 
 
-    // Use this for initialization
+    /* Initialization */
     void Awake()
     {
-        stack = new List<Effect>();
+        if(effectStack == null)
+        {
+            effectStack = this;
+        }
+        stack = new List<GameObject>();
     }
 
-    public void AddEffect(Effect e)
+    /* Add a new effect object to the stack */
+    public void AddEffect(GameObject effect)
     {
-        stack.Add(e);
+        Debug.Assert(effect.GetComponent<Effect>() != null);
+
+        //Create the effect as a child of the stack
+        stack.Add((GameObject)GameObject.Instantiate(effect, this.transform));
     }
 
+    /* Remove the top effect object from the stack */
     public void RemoveEffect()
     {
         Debug.Assert(stack.Count > 0);
         stack.RemoveAt(stack.Count - 1);
     }
 
-    public void RemoveEffect(Effect e)
+    /* Remove the referenced effect */
+    public void RemoveEffect(GameObject effect)
     {
         Debug.Assert(stack.Count > 0);
-        stack.Remove(e);
+        stack.Remove(effect);
     }
 
+    /* Iterate through each atomic effect contained in the topmost effect and resolve them */
     public void ResolveEffect()
     {
-        Effect rootEffect = stack[stack.Count - 1];
+        Effect rootEffect = stack[stack.Count - 1].GetComponent<Effect>();
         RemoveEffect();
         foreach(Effect e in rootEffect)
         {
@@ -41,6 +53,7 @@ public class EffectStack : MonoBehaviour
         }
     }
     
+    /* Static method to access the singleton EffectStack */
     public static EffectStack GetEffectStack()
     {
         if (effectStack)
@@ -49,7 +62,8 @@ public class EffectStack : MonoBehaviour
         }
         else
         {
-            effectStack = new EffectStack();
+            GameObject effectStackObj = new GameObject("EffectStack");
+            effectStack = effectStackObj.AddComponent<EffectStack>().GetComponent<EffectStack>();
             DontDestroyOnLoad(effectStack);
             return effectStack;
         }

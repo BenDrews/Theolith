@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
     public static GameManager gameManager; //A static member of GameManager that can be accessed by any other member in the code.
-    private BoardManager boardGen;
+    private BoardManager boardManager;
+    private EffectStack effectStack;
     private int turnCount = 0;
-    
+
+    public List<GameObject> players;
+    public List<GameObject> entities;
+    public GameObject selected;
 
     // Events
     public UnityEvent onTurnStart;
@@ -34,13 +39,21 @@ public class GameManager : MonoBehaviour {
 
     // Use this for initialization
     void Awake () {
-        //TODO: Create an instance of Board Manager.
-        boardGen = BoardManager.GetBoardManager();
+        if (gameManager == null)
+        {
+            gameManager = this;
+            DontDestroyOnLoad(gameManager);
+        }
+        
+        boardManager = BoardManager.GetBoardManager();
+        effectStack = EffectStack.GetEffectStack();
         InitGame();
 	}
 
     void InitGame() {
-
+        players.Add((GameObject)Instantiate(Resources.Load("TestPlayer1")));
+        players.Add((GameObject)Instantiate(Resources.Load("TestPlayer2")));
+        
     }
 
     void Update()
@@ -61,7 +74,8 @@ public class GameManager : MonoBehaviour {
         }
         else
         {
-            gameManager = new GameManager();
+            GameObject gameManagerObj = new GameObject("GameManager");
+            gameManager = gameManagerObj.AddComponent<GameManager>().GetComponent<GameManager>();
             DontDestroyOnLoad(gameManager);
             return gameManager;
         }

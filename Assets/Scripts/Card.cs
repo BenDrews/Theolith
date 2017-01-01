@@ -4,12 +4,11 @@ using System.Collections.Generic;
 
 public class Card : MonoBehaviour {
 
-    private int cost;
-    private Sprite card; //Card's image.
-    private Effect effect;
-    //private Text
-    // private Minion minion; -Associated minion.
-	// Use this for initialization
+    public int cost;
+    public GameObject effect;
+    public string text;
+	
+    // Use this for initialization
 	void Start () {
 
 	}

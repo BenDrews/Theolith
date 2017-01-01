@@ -2,6 +2,7 @@
 using UnityEngine.Assertions;
 using UnityEngine.Events;
 using System.Collections;
+using System.Collections.Generic;
 
 //Basic data structure to store information about a single tile
 public class BoardTile : MonoBehaviour{
@@ -9,6 +10,7 @@ public class BoardTile : MonoBehaviour{
     private GameObject[] adjTiles;
 
     public GameObject content;
+    public List<GameObject> graveyard;
     public int x;
     public int y;
 
@@ -66,5 +68,23 @@ public class BoardTile : MonoBehaviour{
             if(temp != null) { result.Add(temp); }
         }
         return result;
+    }
+
+    /* Messaged called when the tile is selected */
+    public void OnMouseDown()
+    {
+        GameObject selected = GameManager.GetGameManager().selected;
+        if(selected != null)
+        {
+            if(selected.GetComponent<Entity>() != null)
+            {
+                selected.GetComponent<Entity>().AttemptMove(x, y);
+                GameManager.GetGameManager().selected = null;
+            } else if(selected.GetComponent<Card>() !=  null)
+            {
+                //TODO: Cast card
+                selected = null;
+            }
+        }           
     }
 }
